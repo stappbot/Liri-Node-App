@@ -1,6 +1,17 @@
 require("dotenv").config();
+var keys = require("./key");
+var Spotify = require("node-spotify-api");
 
-var spotify = new spotify(keys.spotify);
+var spotify = new Spotify(keys);
+
+spotify
+  .search({ type: "track", query: "All the Small Things" })
+  .then(function(response) {
+    console.log(response);
+  })
+  .catch(function(err) {
+    console.log(err);
+  });
 
 //commands concert-this, spotify-this-song, movie-this, do-what-it-says
 
@@ -14,6 +25,13 @@ var spotify = new spotify(keys.spotify);
 
 //_____
 //node liri.js spotify-this-song '<song name here>'
+if (process.argv[2] === "spotify-this-song") {
+  if (process.argv[3]) {
+    console.log(process.argv[3]);
+  } else {
+    console.log("The Sign");
+  }
+}
 //this with show following info in terminal:
 //artist(s)
 //the song name
