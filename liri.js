@@ -1,22 +1,33 @@
 require("dotenv").config();
-var keys = require("./key");
-var Spotify = require("node-spotify-api");
+const keys = require("./key");
+const Spotify = require("node-spotify-api");
 
-var spotify = new Spotify(keys);
-var axios = require("axios");
-//OMBD API
+const spotify = new Spotify(keys.spotify);
+const axios = require("axios");
 
 //Bands In Town & moment.js
 
 //commands concert-this, spotify-this-song, movie-this, do-what-it-says
 
-//_____
 //concert-this
 if (process.argv[2] === "concert-this") {
   if (process.argv[3]) {
-    // BAND.search({ type: "track", query: process.argv[3] })
-    //   .then(function(response) {
-    //     console.log(response);
+    let artist = process.argv[3];
+
+    const queryUrl =
+      "https://rest.bandsintown.com/artists/" +
+      artist +
+      "/events?app_id=" +
+      keys.bands_id;
+    axios
+      .get(queryUrl)
+      .then(function(data) {
+        console.log(data.data[0].venue.name);
+        console.log(
+          `City: ${data.data[0].venue.city}, State: ${data.data[0].venue.region}, Country: ${data.data[0].venue.country}`
+        );
+        console.log(data.data[0].datetime);
+        //still need to convert in moment.js to "MM/DD/YYYY"
       })
       .catch(function(err) {
         console.log(err);
@@ -25,11 +36,6 @@ if (process.argv[2] === "concert-this") {
     console.log("Do you even want to find a band?");
   }
 }
-//search the Bands in Town Artist Events API ("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp") for an artist and render the following info:
-//name of venue
-//venue location
-//date of event (use moment to format this as "MM/DD/YYYY")
-//*no need to sign up for a Bands in Town api_id key, use codingbootcamp as your app_id (EX: https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp)
 
 //spotify-this-song
 if (process.argv[2] === "spotify-this-song") {
@@ -55,8 +61,8 @@ if (process.argv[2] === "spotify-this-song") {
 //movie-this
 if (process.argv[2] === "movie-this") {
   if (process.argv[3]) {
-    var movieName = process.argv[3];
-    var queryUrl =
+    let movieName = process.argv[3];
+    const queryUrl =
       "http://www.omdbapi.com/?t=" +
       movieName +
       "&y=&plot=short&apikey=trilogy";
