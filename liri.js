@@ -3,60 +3,83 @@ var keys = require("./key");
 var Spotify = require("node-spotify-api");
 
 var spotify = new Spotify(keys);
+var axios = require("axios");
+//OMBD API
 
-spotify
-  .search({ type: "track", query: "All the Small Things" })
-  .then(function(response) {
-    console.log(response);
-  })
-  .catch(function(err) {
-    console.log(err);
-  });
+//Bands In Town & moment.js
 
 //commands concert-this, spotify-this-song, movie-this, do-what-it-says
 
 //_____
 //concert-this
+if (process.argv[2] === "concert-this") {
+  if (process.argv[3]) {
+    // BAND.search({ type: "track", query: process.argv[3] })
+    //   .then(function(response) {
+    //     console.log(response);
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
+  } else {
+    console.log("Do you even want to find a band?");
+  }
+}
 //search the Bands in Town Artist Events API ("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp") for an artist and render the following info:
 //name of venue
 //venue location
 //date of event (use moment to format this as "MM/DD/YYYY")
 //*no need to sign up for a Bands in Town api_id key, use codingbootcamp as your app_id (EX: https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp)
 
-//_____
-//node liri.js spotify-this-song '<song name here>'
+//spotify-this-song
 if (process.argv[2] === "spotify-this-song") {
   if (process.argv[3]) {
-    console.log(process.argv[3]);
+    spotify
+      .search({ type: "track", query: process.argv[3] })
+      .then(function(response) {
+        for (i = 0; i < response.tracks.items.length; i++) {
+          console.log(response.tracks.items[i].name);
+          console.log(response.tracks.items[i].album.artists[0].name);
+          console.log(response.tracks.items[i].album.name);
+          console.log(response.tracks.items[i].external_urls.spotify);
+        }
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
   } else {
     console.log("The Sign");
   }
 }
-//this with show following info in terminal:
-//artist(s)
-//the song name
-//a preview link of the song from spotify
-//the album that the song came from
-//if no song is provided then program will default to "The Sign" by Ace of Base
-//use the node-spotify-api package to retrieve song info from the Spotify API
-// you'll need the ID and SECRET to use the Spotify API and the node-spotify-api package.
 
-//_____
-//node liri.js movie-this '<movie name here>'
-//will display...
-//   * Title of the movie.
-//   * Year the movie came out.
-//   * IMDB Rating of the movie.
-//   * Rotten Tomatoes Rating of the movie.
-//   * Country where the movie was produced.
-//   * Language of the movie.
-//   * Plot of the movie.
-//   * Actors in the movie.
-// If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-// If you haven't watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/
-// It's on Netflix!
-//You'll use the axios package to retrieve data from the OMDB API, use API= trilogy
-
+//movie-this
+if (process.argv[2] === "movie-this") {
+  if (process.argv[3]) {
+    var movieName = process.argv[3];
+    var queryUrl =
+      "http://www.omdbapi.com/?t=" +
+      movieName +
+      "&y=&plot=short&apikey=trilogy";
+    axios
+      .get(queryUrl)
+      .then(function(response) {
+        console.log(`Title: ${response.data.Title}`);
+        console.log(`Year of release: ${response.data.Year}`);
+        console.log(`The movie's rating is: ${response.data.Rated}`);
+        console.log(`Rotten Tomatoes: ${response.data.Ratings.Value}`);
+        console.log(`Country origin: ${response.data.Country}`);
+        console.log(`Language: ${response.data.Language}`);
+        console.log(`Plot: ${response.data.Plot}`);
+        console.log(`Actors: ${response.data.Actors}`);
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
+  } else {
+    console.log(`If you haven't watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/
+ It's on Netflix!`);
+  }
+}
 //_____
 // node liri.js do-what-it-says
 // Using the fs Node package,
